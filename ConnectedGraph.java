@@ -90,12 +90,12 @@ public class ConnectedGraph {
     public static void main(String[] args) {
         Scanner userInput = new Scanner(System.in);
 
-        System.out.println("Enter the number of vertices:");
+        System.out.print("Enter the number of vertices:");
         int totalVertices = userInput.nextInt();
 
         ConnectedGraph graphChecker = new ConnectedGraph(totalVertices);
 
-        System.out.println("Enter the number of edges:");
+        System.out.print("Enter the number of edges:");
         int totalEdges = userInput.nextInt();
 
         System.out.println("Enter the edges (pair of vertices):");
