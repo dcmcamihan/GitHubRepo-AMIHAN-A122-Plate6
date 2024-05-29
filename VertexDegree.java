@@ -82,21 +82,23 @@ public class VertexDegree {
     public static void main(String[] args) {
         Scanner s = new Scanner(System.in);
 
-        System.out.print("Enter the number of vertices: ");
+        System.out.print("Enter the number of vertices\t\t\t\t: ");
         int vertexCount = s.nextInt();
 
         VertexDegree calculator = new VertexDegree(vertexCount);
 
-        System.out.println("Enter the vertices:");
-        for (int i = 0; i < vertexCount; i++) {
-            String vertex = s.next();
+        System.out.print("Enter the vertices, separated by a comma then space (, ): ");
+        s.nextLine();
+        String vertices = s.nextLine();
+        String[] verticesArray = vertices.split(", ");
+        for (String vertex : verticesArray) {
             calculator.addVertex(vertex);
         }
 
-        System.out.print("Enter the number of edges: ");
+        System.out.print("Enter the number of edges\t\t\t\t: ");
         int edgeCount = s.nextInt();
 
-        System.out.println("Enter the edges or pair of vertices (u v):");
+        System.out.println("Enter the edges (pair of vertices):");
         for (int i = 0; i < edgeCount; i++) {
             String vertex1 = s.next();
             String vertex2 = s.next();
