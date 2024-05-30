@@ -29,12 +29,13 @@ class CycleGraph {
     /**
      * Checks if there's a cycle starting from a given vertex.
      * @param vertexIndex the index of the vertex to start the check from
+     * @param parentIndex the index of the parent vertex in the DFS traversal
      * @param visitedVertices an array that keeps track of the visited vertices
      * @param recursionStack an array that keeps track of the vertices in the recursion stack
      * @param cycle a list that stores the cycle if it exists
      * @return true if there's a cycle, false otherwise
      */
-    private boolean isCycleFromVertex(int vertexIndex, boolean[] visitedVertices, boolean[] recursionStack, List<Integer> cycle) {
+    private boolean isCycleFromVertex(int vertexIndex, int parentIndex, boolean[] visitedVertices, boolean[] recursionStack, List<Integer> cycle) {
         if (recursionStack[vertexIndex]) {
             cycle.add(vertexIndex);
             return true;
@@ -47,7 +48,10 @@ class CycleGraph {
         recursionStack[vertexIndex] = true;
 
         for (Integer neighborIndex: adjacencyList.get(vertexIndex)) {
-            if (isCycleFromVertex(neighborIndex, visitedVertices, recursionStack, cycle)) {
+            // If the neighbor is the parent in the DFS traversal, skip this iteration
+            if (neighborIndex == parentIndex) continue;
+
+            if (isCycleFromVertex(neighborIndex, vertexIndex, visitedVertices, recursionStack, cycle)) {
                 if (!cycle.contains(vertexIndex)) {
                     cycle.add(vertexIndex);
                 }
@@ -82,15 +86,15 @@ class CycleGraph {
     /**
      * Initiates cycle detection in the graph.
      */
-    private void cycleSearch() {
+    void cycleSearch() {
         boolean[] visitedVertices = new boolean[vertexCnt];
         boolean[] recursionStack = new boolean[vertexCnt];
         List<Integer> cycle = new ArrayList<>();
 
         for (int i = 0; i < vertexCnt; i++) {
-            if (!visitedVertices[i] && isCycleFromVertex(i, visitedVertices, recursionStack, cycle)) {
+            if (!visitedVertices[i] && isCycleFromVertex(i, -1, visitedVertices, recursionStack, cycle)) {
                 if (cycle.size() == vertexCnt) {
-                    System.out.println("The graph is a cycle");
+                    System.out.println("The graph has a cycle");
                     return;
                 } else {
                     printCycle(cycle);
@@ -112,7 +116,7 @@ class CycleGraph {
             cycleString.append(indexToVertexMap.get(index)).append(" -> ");
         }
         cycleString.append(indexToVertexMap.get(cycle.get(0)));
-        System.out.println("The graph contains a cycle: " + cycleString);
+        System.out.println("\nThe graph is a cycle" + "\n" + "\n" + "This graph clearly shows a cycle " + cycleString);
     }
 
     /**
@@ -121,15 +125,15 @@ class CycleGraph {
      */
     public static void main(String[] args) {
         Scanner s = new Scanner(System.in);
-        System.out.println("Enter the number of vertices:");
+        System.out.print("Enter the number of vertices\t\t: ");
         int vertexCount = s.nextInt();
         s.nextLine();
         boolean isDirected = getGraphDirection(s);
         CycleGraph graph = new CycleGraph(vertexCount, isDirected);
-        System.out.println("Enter the number of edges:");
+        System.out.print("Enter the number of edges\t\t\t: ");
         int edgeCount = s.nextInt();
         s.nextLine();
-        System.out.println("Enter the edges (pair of vertices):");
+        System.out.println("Enter the edges (pair of vertices)\t:");
         for (int i = 0; i < edgeCount; i++) {
             String sourceVertex = s.next();
             String destinationVertex = s.next();
@@ -145,7 +149,7 @@ class CycleGraph {
      */
     private static boolean getGraphDirection(Scanner s) {
         while (true) {
-            System.out.println("Is the graph directed? (yes/no):");
+            System.out.print("Is the graph directed? (yes/no)\t\t: ");
             String input = s.nextLine().trim().toLowerCase();
             if (input.equals("yes")) {
                 return true;
