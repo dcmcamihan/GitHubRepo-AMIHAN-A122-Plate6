@@ -7,6 +7,7 @@ import java.util.*;
 public class ConnectedGraph {
     private final List<List<Integer>> graphAdjacencyList;
     private final int totalVertices;
+    private final Map<String, Integer> vertexIndexMap;
 
     /**
      * Constructs a new ConnectedGraph with the specified number of vertices.
@@ -15,8 +16,19 @@ public class ConnectedGraph {
     public ConnectedGraph(int totalVertices) {
         this.totalVertices = totalVertices;
         graphAdjacencyList = new ArrayList<>(totalVertices);
+        vertexIndexMap = new HashMap<>();
         for (int i = 0; i < totalVertices; i++) {
             graphAdjacencyList.add(new LinkedList<>());
+        }
+    }
+
+    /**
+     * Adds a vertex to the graph.
+     * @param vertex the vertex to be added
+     */
+    public void addVertex(String vertex) {
+        if (!vertexIndexMap.containsKey(vertex)) {
+            vertexIndexMap.put(vertex, vertexIndexMap.size());
         }
     }
 
@@ -25,9 +37,14 @@ public class ConnectedGraph {
      * @param vertexOne the first vertex of the edge
      * @param vertexTwo the second vertex of the edge
      */
-    public void createEdge(int vertexOne, int vertexTwo) {
-        graphAdjacencyList.get(vertexOne).add(vertexTwo);
-        graphAdjacencyList.get(vertexTwo).add(vertexOne);
+    public void createEdge(String vertexOne, String vertexTwo) throws IllegalArgumentException {
+        if (!vertexIndexMap.containsKey(vertexOne) || !vertexIndexMap.containsKey(vertexTwo)) {
+            throw new IllegalArgumentException("One or both vertices not found in the graph.");
+        }
+        int indexOne = vertexIndexMap.get(vertexOne);
+        int indexTwo = vertexIndexMap.get(vertexTwo);
+        graphAdjacencyList.get(indexOne).add(indexTwo);
+        graphAdjacencyList.get(indexTwo).add(indexOne);
     }
 
     /**
@@ -38,7 +55,7 @@ public class ConnectedGraph {
     private void executeDFS(int currentVertex, boolean[] visitedVertices) {
         // Mark the current vertex as visited
         visitedVertices[currentVertex] = true;
-        // Visit all the adjacent vertices
+        // Visit all the adjacent vertices that haven't been visited yet
         for (int adjacentVertex : graphAdjacencyList.get(currentVertex)) {
             if (!visitedVertices[adjacentVertex]) {
                 executeDFS(adjacentVertex, visitedVertices);
@@ -53,9 +70,9 @@ public class ConnectedGraph {
     public boolean checkGraphConnectivity() {
         // Array to keep track of visited vertices
         boolean[] visitedVertices = new boolean[totalVertices];
-        // Start DFS from the first vertex (vertex 0)
+        // Start DFS from the first vertex
         executeDFS(0, visitedVertices);
-        // Check if all vertices are visited
+        // If any vertex hasn't been visited, the graph is not connected
         for (boolean visitStatus : visitedVertices) {
             if (!visitStatus) {
                 return false;
@@ -72,15 +89,18 @@ public class ConnectedGraph {
         // Array to keep track of visited vertices
         boolean[] visitedVertices = new boolean[totalVertices];
         int componentCount = 0;
-        // Perform DFS for each unvisited vertex and count the components
+        // For each vertex, if it hasn't been visited, perform DFS and increment the component count
         for (int vertex = 0; vertex < totalVertices; vertex++) {
-            // Check if the vertex has any edges
-            if (!graphAdjacencyList.get(vertex).isEmpty() && !visitedVertices[vertex]) {
+            if (!visitedVertices[vertex]) {
                 executeDFS(vertex, visitedVertices);
                 componentCount++;
             }
         }
         return componentCount;
+    }
+
+    public Map<String, Integer> getVertexIndexMap() {
+        return vertexIndexMap;
     }
 
     /**
@@ -90,26 +110,39 @@ public class ConnectedGraph {
     public static void main(String[] args) {
         Scanner userInput = new Scanner(System.in);
 
-        System.out.print("Enter the number of vertices:");
+        System.out.print("Enter the number of vertices\t\t\t\t\t\t\t: ");
         int totalVertices = userInput.nextInt();
 
         ConnectedGraph graphChecker = new ConnectedGraph(totalVertices);
 
-        System.out.print("Enter the number of edges:");
+        System.out.print("Enter the vertices, separated by a comma then space (, ): ");
+        userInput.nextLine(); // Consume newline left-over
+        String vertices = userInput.nextLine();
+        String[] verticesArray = vertices.split(", ");
+        for (String vertex : verticesArray) {
+            graphChecker.addVertex(vertex);
+        }
+
+        System.out.print("Enter the number of edges\t\t\t\t\t\t\t\t: ");
         int totalEdges = userInput.nextInt();
 
         System.out.println("Enter the edges (pair of vertices):");
         for (int i = 0; i < totalEdges; i++) {
-            int vertexOne = userInput.nextInt();
-            int vertexTwo = userInput.nextInt();
+            String vertexOne = userInput.next();
+            String vertexTwo = userInput.next();
 
-            if (vertexOne >= totalVertices || vertexTwo >= totalVertices || vertexOne < 0 || vertexTwo < 0) {
-                System.out.println("Invalid vertices. Vertices should be between 0 and " + (totalVertices - 1));
+            if (!graphChecker.getVertexIndexMap().containsKey(vertexOne) || !graphChecker.getVertexIndexMap().containsKey(vertexTwo)) {
+                System.out.println("Invalid vertices. Please enter valid vertices.");
                 i--;
                 continue;
             }
 
-            graphChecker.createEdge(vertexOne, vertexTwo);
+            try {
+                graphChecker.createEdge(vertexOne, vertexTwo);
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+                i--;
+            }
         }
 
         if (graphChecker.checkGraphConnectivity()) {
