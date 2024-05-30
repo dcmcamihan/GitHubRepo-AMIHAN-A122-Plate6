@@ -82,7 +82,7 @@ public class VertexDegree {
     public static void main(String[] args) {
         Scanner s = new Scanner(System.in);
 
-        System.out.print("Enter the number of vertices\t\t\t\t: ");
+        System.out.print("Enter the number of vertices\t\t\t\t\t\t\t: ");
         int vertexCount = s.nextInt();
 
         VertexDegree calculator = new VertexDegree(vertexCount);
@@ -95,7 +95,7 @@ public class VertexDegree {
             calculator.addVertex(vertex);
         }
 
-        System.out.print("Enter the number of edges\t\t\t\t: ");
+        System.out.print("Enter the number of edges\t\t\t\t\t\t\t\t: ");
         int edgeCount = s.nextInt();
 
         System.out.println("Enter the edges (pair of vertices):");
