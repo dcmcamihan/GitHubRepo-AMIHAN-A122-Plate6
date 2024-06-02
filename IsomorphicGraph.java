@@ -95,14 +95,18 @@ public class IsomorphicGraph {
      *
      * @param args command line arguments (not used)
      */
+
+
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int[][] firstGraph = null;
         int[][] secondGraph = null;
-        HashMap<String, Integer> vertexIndices = new HashMap<>();
-        int vertexIndex = 0;
 
         for (int graphIndex = 1; graphIndex <= 2; graphIndex++) {
+            HashMap<String, Integer> vertexIndices = new HashMap<>();
+            int vertexIndex = 0;
+
             System.out.print("Enter the number of vertices in graph " + graphIndex + ": ");
             int vertices = Integer.parseInt(scanner.nextLine());
 
@@ -138,4 +142,5 @@ public class IsomorphicGraph {
         IsomorphicGraph validator = new IsomorphicGraph(firstGraph, secondGraph);
         System.out.println("Are the two graphs isomorphic? " + (validator.areGraphsIsomorphic() ? "Yes" : "No"));
     }
+
 }
